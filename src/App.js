@@ -51,7 +51,6 @@ const Form = ({ onAddItem }) => {
     e.preventDefault();
     if (!description) return;
     const newItem = { description, quantity, packed: false, id: Date.now() };
-    console.log(newItem);
     onAddItem(newItem);
     setDescription("");
     setQuantity(1);
@@ -146,7 +145,6 @@ const Stats = ({ items }) => {
   const numItems = items.length;
   const packedItems = items.filter((item) => item.packed).length;
   const percentage = Math.round((packedItems / numItems) * 100);
-  console.log(packedItems);
   return (
     <footer className="stats">
       <em>
