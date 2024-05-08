@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 
-const App = () => {
+const Prac = () => {
   const [items, setItems] = useState(() => {
     const storedItem = localStorage.getItem("items");
     return storedItem ? JSON.parse(storedItem) : [];
@@ -11,7 +11,7 @@ const App = () => {
   };
 
   const handleDeleteItem = (id) => {
-    setItems((item) => item.filter((item) => item.id !== id));
+    setItems((items) => items.filter((item) => item.id !== id));
   };
 
   const handleUpdateItem = (id) => {
@@ -27,78 +27,75 @@ const App = () => {
   }, [items]);
 
   return (
-    <div className="app">
-      <Logo />
+    <div style={{ padding: "50px" }}>
       <Form onAddItem={handleAddItem} />
-      <PakingList
+      <ListItem
         items={items}
         onDeleteItem={handleDeleteItem}
         onUpdateItem={handleUpdateItem}
       />
-      <Stats items={items} />
     </div>
   );
 };
 
-const Logo = () => {
-  return <h1>🌴 Far Away 💼</h1>;
-};
 const Form = ({ onAddItem }) => {
-  const [description, setDescription] = useState("test");
-  const [quantity, setQuantity] = useState(1);
+  const [description, setDescription] = useState("");
+  const [quantity, setQuentity] = useState(1);
 
-  const handleSubmit = (e) => {
+  const handleForm = (e) => {
     e.preventDefault();
     if (!description) return;
-    const newItem = { description, quantity, packed: false, id: Date.now() };
-    console.log(newItem);
-    onAddItem(newItem);
+    const newItems = { id: Date.now(), description, quantity, packed: false };
+    console.log(newItems);
+    onAddItem(newItems);
     setDescription("");
-    setQuantity(1);
+    setQuentity(1);
   };
 
   return (
-    <form className="add-form" onSubmit={handleSubmit}>
-      <h3>What do you need for your trip</h3>
-      <select
-        value={quantity}
-        onChange={(e) => {
-          setQuantity(Number(e.target.value));
-        }}
-      >
-        {Array.from({ length: 10 }, (_, i) => i + 1).map((num) => (
-          <option key={num} value={num}>
-            {num}
-          </option>
-        ))}
-      </select>
-      <input
-        type="text"
-        placeholder="Item..."
-        value={description}
-        onChange={(e) => setDescription(e.target.value)}
-      />
-      <button>Add</button>
-    </form>
+    <div>
+      <form onSubmit={handleForm}>
+        <select
+          value={quantity}
+          onChange={(e) => setQuentity(Number(e.target.value))}
+        >
+          {Array.from({ length: 10 }, (_, i) => i + 1).map((num) => (
+            <option value={num} key={num}>
+              {num}
+            </option>
+          ))}
+        </select>
+        <input
+          type="text"
+          value={description}
+          placeholder="Enter description..."
+          onChange={(e) => setDescription(e.target.value)}
+        />
+        <button>Add Items</button>
+      </form>
+    </div>
   );
 };
-const PakingList = ({ items, onDeleteItem, onUpdateItem }) => {
+
+const ListItem = ({ items, onDeleteItem, onUpdateItem }) => {
   const [sortBy, setSortBy] = useState("input");
 
   let sortedItems;
 
   if (sortBy === "input") sortedItems = items;
+
   if (sortBy === "description")
     sortedItems = items
       .slice()
       .sort((a, b) => a.description.localeCompare(b.description));
+
   if (sortBy === "packed")
     sortedItems = items
       .slice()
       .sort((a, b) => Number(a.packed) - Number(b.packed));
 
   return (
-    <div className="list">
+    <div>
       <ul>
         {sortedItems.map((item) => (
           <Item
@@ -109,11 +106,11 @@ const PakingList = ({ items, onDeleteItem, onUpdateItem }) => {
           />
         ))}
       </ul>
-      <div className="actions">
+      <div style={{ marginTop: "200px" }}>
         <select value={sortBy} onChange={(e) => setSortBy(e.target.value)}>
           <option value="input">Sort by Input</option>
           <option value="description">Sort by Description</option>
-          <option value="packed">Sort by Packed Status</option>
+          <option value="packed">Sort by Packed</option>
         </select>
       </div>
     </div>
@@ -122,41 +119,18 @@ const PakingList = ({ items, onDeleteItem, onUpdateItem }) => {
 
 const Item = ({ item, onDeleteItem, onUpdateItem }) => {
   return (
-    <li>
+    <li style={{ listStyleType: "none" }}>
       <input
         type="checkbox"
         value={item.packed}
         onChange={() => onUpdateItem(item.id)}
       />
       <span style={item.packed ? { textDecoration: "line-through" } : {}}>
-        {item.quantity} {item.description}
+        &nbsp;{item.quantity} {item.description}
       </span>
       <button onClick={() => onDeleteItem(item.id)}>❌</button>
     </li>
   );
 };
-const Stats = ({ items }) => {
-  if (!items.length)
-    return (
-      <p className="stats">
-        <em>Start adding some items to your paking list 🚀</em>
-      </p>
-    );
 
-  const numItems = items.length;
-  const packedItems = items.filter((item) => item.packed).length;
-  const percentage = Math.round((packedItems / numItems) * 100);
-  console.log(packedItems);
-  return (
-    <footer className="stats">
-      <em>
-        {percentage === 100
-          ? "You got everything! Ready to go ✈️"
-          : `You have ${numItems} items on your list, and you already packed
-        ${packedItems} (${percentage}%)`}
-      </em>
-    </footer>
-  );
-};
-
-export default App;
+export default Prac;
